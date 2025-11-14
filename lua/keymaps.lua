@@ -282,3 +282,30 @@ keymap("n", "<leader>cf", lsp_format, { desc = "Formatar Código (LSP)" })
 -- ============================================================================
 -- Atalho: Espaço + /
 keymap({"n", "v"}, "<leader>/", ":CommentToggle<CR>", { desc = "Comentar/Descomentar" })
+
+-- Em /lua/keymaps.lua (pode ser no final)
+
+-- ============================================================================
+-- 8. DEBUGGER (DAP)
+-- ============================================================================
+
+-- Desta forma, o 'require' só acontece QUANDO você aperta a tecla,
+-- o que impede o crash na inicialização.
+
+-- Iniciar Debug (F5 do VSCode)
+keymap("n", "<leader>ds", function() require('dap').continue() end, { desc = "Debug Start (Continue)" })
+-- Fechar Sessão
+keymap("n", "<leader>de", function() require('dap').terminate() end, { desc = "Debug End (Terminate)" })
+-- Toggle Breakpoint
+keymap("n", "<leader>db", function() require('dap').toggle_breakpoint() end, { desc = "Debug Breakpoint" })
+
+-- Navegação
+keymap("n", "<leader>dn", function() require('dap').step_over() end, { desc = "Debug Step Over (Next)" })
+keymap("n", "<leader>dj", function() require('dap').step_over() end, { desc = "Debug Step Over (Next)" }) -- Alias
+keymap("n", "<leader>di", function() require('dap').step_into() end, { desc = "Debug Step Into" })
+keymap("n", "<leader>do", function() require('dap').step_out() end, { desc = "Debug Step Out" })
+keymap("n", "<leader>dk", function() require('dap').step_out() end, { desc = "Debug Step Out" }) -- Alias
+
+-- UI
+keymap("n", "<leader>du", function() require('dapui').toggle() end, { desc = "Debug Toggle UI" })
+keymap("n", "<leader>dr", function() require('dap').repl.toggle() end, { desc = "Debug REPL" })

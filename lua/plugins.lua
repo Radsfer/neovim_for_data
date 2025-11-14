@@ -94,9 +94,10 @@ require("lazy").setup({
     }
   },
 
-  -- LSP Zero (Configuração de Linguagem/Autocomplete)
+-- LSP Zero (Configuração de Linguagem/Autocomplete)
   {
     'VonHeikemen/lsp-zero.nvim', branch = 'v3.x',
+    -- RESTAURE A LISTA DE DEPENDÊNCIAS COMPLETA:
     dependencies = {
       {'williamboman/mason.nvim'},
       {'williamboman/mason-lspconfig.nvim'},
@@ -105,20 +106,86 @@ require("lazy").setup({
       {'hrsh7th/cmp-nvim-lsp'},
       {'L3MON4D3/LuaSnip'},
     },
-    config = function()
+config = function()
       local lsp_zero = require('lsp-zero')
       lsp_zero.on_attach(function(client, bufnr)
         lsp_zero.default_keymaps({buffer = bufnr})
       end)
-      require('mason').setup({})
+      
+      -- ==========================================================
+      -- A CORREÇÃO ESTÁ AQUI:
+      -- 1. 'mason' agora vai garantir o 'debugpy' (DAP)
+      -- 2. 'mason-lspconfig' vai garantir SÓ os LSPs
+      -- ==========================================================
+      require('mason').setup({
+        ensure_installed = {
+          'debugpy' -- O DAP (Debugger) vem para cá
+        }
+      })
       require('mason-lspconfig').setup({
-        ensure_installed = {'pyright'},
+        -- 'debugpy' FOI REMOVIDO DAQUI
+        ensure_installed = {'pyright', 'ruff'},
         handlers = { lsp_zero.default_setup },
       })
+      -- ==========================================================
+
+    end
+  },
+  -- ==========================================================
+  -- 6. DEBUGGER (DAP) - NOVO BLOCO
+  -- ==========================================================
+-- Em /lua/plugins.lua
+
+  {
+    "mfussenegger/nvim-dap",
+    -- Configuração para usar o debugpy instalado pelo Mason
+    config = function()
+      local dap = require('dap')
+      
+      -- ==========================================================
+      -- A CORREÇÃO ESTÁ AQUI
+      -- O adaptador precisa ser um 'executable', não uma função
+      -- ==========================================================
+      dap.adapters.python = {
+        type = 'executable',
+        command = vim.fn.stdpath('data') .. '/mason/packages/debugpy/venv/bin/python',
+        args = { '-m', 'debugpy.adapter' },
+      }
+      -- ==========================================================
+
+      -- O resto (as configurações de 'launch') continua igual
+      dap.configurations.python = {
+        {
+          type = 'python', -- Este 'type' usa o 'adapter' que definimos acima
+          request = 'launch',
+          name = 'Lançar arquivo',
+          program = '${file}', -- Rodar o arquivo atual
+          pythonPath = function()
+            -- Tenta usar o .venv local se existir
+            if vim.fn.isdirectory('.venv') == 1 then
+              return '.venv/bin/python'
+            end
+            -- Senão, usa o python do sistema
+            return '/usr/bin/python3'
+          end,
+        },
+      }
+    end
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
+    config = function()
+      -- Tenta carregar o plugin de forma segura
+      local status_ok, dapui = pcall(require, "dapui")
+      if not status_ok then
+        return -- Se falhar, só para de rodar este bloco
+      end
+      dapui.setup()
     end
   },
 
--- 6. O Terminal "PyCharm-like" (ToggleTerm)
+  -- 6. O Terminal "PyCharm-like" (ToggleTerm)
   {
     'akinsho/toggleterm.nvim',
     version = "*",
