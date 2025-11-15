@@ -72,7 +72,7 @@ require("lazy").setup({
     build = ":TSUpdate",
     config = function () 
       require("nvim-treesitter.configs").setup {
-        ensure_installed = { "python", "lua", "vim", "javascript", "markdown" },
+        ensure_installed = { "python", "lua", "vim", "javascript", "markdown", "sql", },
         highlight = { enable = true },
       }
     end
@@ -124,10 +124,15 @@ config = function()
       })
       require('mason-lspconfig').setup({
         -- 'debugpy' FOI REMOVIDO DAQUI
-        ensure_installed = {'pyright', 'ruff'},
+        ensure_installed = {'pyright', 'ruff', 'sqlls'},
         handlers = { lsp_zero.default_setup },
       })
-      -- ==========================================================
+      require('cmp').setup.filetype({'sql'},{
+        sources = {
+            {name = "vim-dadbod-completion"},
+            {name = "buffer"},
+         }
+      })
 
     end
   },
@@ -208,6 +213,21 @@ config = function()
     end
   },
 
+
+
+
+
+  {
+    "kristijanhusak/vim-dadbod-ui",
+    "tpope/vim-dadbod", 
+    "kristijanhusak/vim-dadbod-completion",
+  
+    
+    init = function()
+      vim.g.db_ui_use_nerd_fonts = 1
+      vim.g.db_ui_save_location = vim.fn.stdpath("data") .. "/db_ui_connections"
+    end,
+  },
 })
 
 

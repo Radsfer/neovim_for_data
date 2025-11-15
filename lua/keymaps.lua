@@ -309,3 +309,19 @@ keymap("n", "<leader>dk", function() require('dap').step_out() end, { desc = "De
 -- UI
 keymap("n", "<leader>du", function() require('dapui').toggle() end, { desc = "Debug Toggle UI" })
 keymap("n", "<leader>dr", function() require('dap').repl.toggle() end, { desc = "Debug REPL" })
+
+-- ============================================================================
+-- 9. ATALHOS SQL (VIM-DADBOD)
+-- ============================================================================
+
+-- Mapeia para o COMANDO Vim, que agora temos certeza que existe
+-- por causa do 'lazy = false' no plugins.lua
+keymap({"n", "v"}, "<leader>sr", 
+  ":DBUIFindBuffer<CR>",
+  { desc = "SQL Run (Executar Query)", silent = true }
+)
+
+keymap("n", "<leader>se", 
+  ":DBUIToggle<CR>",
+  { desc = "SQL Explorer (DBUI)", silent = true }
+)
