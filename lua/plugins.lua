@@ -127,6 +127,13 @@ config = function()
         ensure_installed = {'pyright', 'ruff', 'sqlls'},
         handlers = { lsp_zero.default_setup },
       })
+      local cmp = require('cmp')
+      cmp.setup({
+        -- Esta configuração será mesclada com a do lsp-zero
+        mapping = {
+          ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        }
+      })
       require('cmp').setup.filetype({'sql'},{
         sources = {
             {name = "vim-dadbod-completion"},
